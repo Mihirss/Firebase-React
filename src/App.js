@@ -171,13 +171,21 @@ function App() {
             }}
           />
           <button onClick={Login}>Login user</button>
-          <button onClick={LoginWithGoogle}>Login with GOOGLE</button>
+          <button
+            className="login-with-google-btn"
+            onClick={LoginWithGoogle}
+            // disabled="true"
+          >
+            Login with GOOGLE
+          </button>
         </div>
 
         {/* Display Looged in User Email... */}
         <div className="card" key="Loggedin">
           <h1>Loged in user</h1>
-          {loggedUser?.email}
+          <h3>{loggedUser?.displayName}</h3>
+          <h3>{loggedUser?.email}</h3>
+          <img src={loggedUser?.photoURL} />
           <button onClick={Logout}>SignOut</button>
         </div>
       </div>
