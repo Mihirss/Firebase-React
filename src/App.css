@@ -28,6 +28,62 @@
   color: #61dafb;
 }
 
+.grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.card {
+  margin: 1rem;
+  padding: 1.5rem;
+  text-align: left;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  background-color: blueviolet;
+  color: white;
+  border: solid white 2px;
+  margin: 5px 0px;
+  border-radius: 5px;
+}
+
+input {
+  color: white;
+  border: solid black 2px;
+  margin: 5px 0px;
+  border-radius: 5px;
+}
+
+.card:hover,
+.card:focus,
+.card:active {
+  color: blueviolet;
+  border-color: blueviolet;
+  background-color: cornsilk;
+}
+
+.card h1 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.card imput {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
