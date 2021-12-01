@@ -1,6 +1,6 @@
 import "./App.css";
 import { useState, useEffect } from "react";
-import { db, auth } from "./firebase-config";
+import { db, auth, Storage } from "./firebase-config";
 
 import {
   collection,
@@ -9,6 +9,7 @@ import {
   updateDoc,
   doc,
   deleteDoc,
+  onSnapshot,
 } from "firebase/firestore";
 
 import {
@@ -19,9 +20,18 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "@firebase/auth";
+import {
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+  getStorage,
+} from "@firebase/storage";
+
+// const storage = getStorage();
 
 function App() {
   const [users, setUsers] = useState([]);
+  console.log("🚀 ~ file: App.js ~ line 26 ~ App ~ users", users);
 
   //Taking data to register in FireStore...
   const [newName, setName] = useState();
@@ -37,6 +47,8 @@ function App() {
 
   //Store Logged user for save Login info...
   const [loggedUser, setLoggedUser] = useState({});
+
+  const [progress, setProgress] = useState(0);
 
   //Update User Id in FireStore...
   const updateUserID = async (id, age) => {
@@ -103,6 +115,36 @@ function App() {
     }
   };
 
+  //Upload filw to firebase storage...
+  const PhotoUpload = (e) => {
+    e.preventDefault();
+    console.log(e);
+    const file = e.target[0].files[0];
+    UpoloadFile(file);
+  };
+
+  //call back function for firebase storage...
+  const UpoloadFile = (file) => {
+    if (!file) return;
+    const storageRef = ref(Storage, `/files/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const prog = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100,
+        );
+        setProgress(prog);
+      },
+      (err) => {
+        console.log(err);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((url) => console.log(url));
+      },
+    );
+  };
+
   //Add data in FireBase...
   const addData = async () => {
     try {
@@ -120,9 +162,14 @@ function App() {
   useEffect(() => {
     const getuser = async () => {
       try {
-        const data = await getDocs(collection(db, "users"));
-        console.log("Document written with ID: ", data);
-        setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+        // const data = await getDocs(collection(db, "users"));
+        // console.log("Document written with ID: ", data);
+        // setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+        const data = onSnapshot(doc(db, "users"), (doc) => {
+          console.log("Current data: ", doc.data());
+          //   setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+          console.log(data);
+        });
       } catch (e) {
         console.error("Error adding document: ", e);
       }
@@ -178,6 +225,16 @@ function App() {
           >
             Login with GOOGLE
           </button>
+        </div>
+
+        {/* Upload file in firebase Storage */}
+        <div className="card" key="login">
+          <h1>Upload picture of user</h1>
+          <form onSubmit={PhotoUpload}>
+            <input type="file" className="imput_photo" />
+            <button type="submit">Upload file</button>
+          </form>
+          <h3>Uploaded{progress}%</h3>
         </div>
 
         {/* Display Looged in User Email... */}
